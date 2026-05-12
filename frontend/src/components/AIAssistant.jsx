@@ -10,7 +10,7 @@ const AIAssistant = () => {
   const [scoreData, setScoreData] = useState(null);
   const [error, setError] = useState(null);
 
-  const API_BASE = 'http://localhost:5001/api/ai';
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api/ai';
 
   const handleScoreResume = async () => {
     setLoading(true);
