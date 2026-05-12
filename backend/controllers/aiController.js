@@ -1,8 +1,10 @@
 const OpenAI = require('openai');
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
+  apiKey: process.env.OPENAI_API_KEY || 'dummy_key'
 });
+
+const isMock = !process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'your_openai_api_key_here';
 
 exports.suggestWording = async (req, res) => {
   try {
@@ -10,6 +12,16 @@ exports.suggestWording = async (req, res) => {
     
     if (!text) {
       return res.status(400).json({ error: 'Text is required for suggestion' });
+    }
+
+    if (isMock) {
+      return res.json({
+        suggestions: [
+          `Mock Suggestion 1: Professional and impactful version of "${text}" for a ${role || 'candidate'}.`,
+          `Mock Suggestion 2: Action-oriented rewrite emphasizing achievements regarding "${text}".`,
+          `Mock Suggestion 3: Concise and metrics-driven summary based on "${text}".`
+        ]
+      });
     }
 
     const prompt = `You are an expert resume writer. Improve the following ${section} description for a ${role || 'job applicant'}. Make it sound professional, action-oriented, and impactful. Provide 3 different concise options separated by "|||".
@@ -37,6 +49,17 @@ exports.suggestWording = async (req, res) => {
 exports.scoreResume = async (req, res) => {
   try {
     const { resumeData, role } = req.body;
+
+    if (isMock) {
+      return res.json({
+        score: 8,
+        feedback: [
+          "Ensure your summary is tailored to the specific role you are applying for.",
+          "Include more quantifiable achievements in your experience section (e.g., increased sales by 20%).",
+          "Consider using more action verbs to start your bullet points."
+        ]
+      });
+    }
 
     const prompt = `You are an expert ATS (Applicant Tracking System) and resume reviewer. Review the following resume data for the role of ${role || 'a general professional'}.
     
